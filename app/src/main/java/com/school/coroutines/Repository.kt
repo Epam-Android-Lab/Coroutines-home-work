@@ -10,12 +10,12 @@ import retrofit2.http.GET
 
 object Repository {
 
-    fun getPosts(callBack: Callback<List<MainActivity.Adapter.Item>>) = NetworkSource.getPosts(callBack)
+    suspend fun getPosts() = NetworkSource.getPosts()
 
     object NetworkSource {
         private interface IPostApi {
             @GET("/posts")
-            fun getPosts(): Call<List<MainActivity.Adapter.Item>>
+            suspend fun getPosts(): List<MainActivity.Adapter.Item>
         }
 
         private val okHttpClient = OkHttpClient.Builder()
@@ -32,6 +32,6 @@ object Repository {
 
         private val postApi = retrofit.create(IPostApi::class.java)
 
-        fun getPosts(callBack: Callback<List<MainActivity.Adapter.Item>>) = postApi.getPosts().enqueue(callBack)
+        suspend fun getPosts() = postApi.getPosts()
     }
 }
