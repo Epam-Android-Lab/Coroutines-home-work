@@ -1,5 +1,6 @@
 package com.school.coroutines
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,11 @@ class ActivityViewModel : ViewModel() {
 
     private fun refreshData() {
         viewModelScope.launch(Dispatchers.IO) {
-            _state.postValue(State.Loaded(Repository.getPosts()))
+            try {
+                _state.postValue(State.Loaded(Repository.getPosts()))
+            } catch (ex: Exception){
+                _state.postValue(State.Error)
+            }
         }
     }
 
