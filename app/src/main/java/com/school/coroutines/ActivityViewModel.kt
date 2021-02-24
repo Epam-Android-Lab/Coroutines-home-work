@@ -1,8 +1,12 @@
 package com.school.coroutines
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,24 +16,18 @@ class ActivityViewModel : ViewModel() {
     val state: LiveData<State>
         get() = _state
 
-    private val callback = object : Callback<List<MainActivity.Adapter.Item>> {
-        override fun onResponse(call: Call<List<MainActivity.Adapter.Item>>, response: Response<List<MainActivity.Adapter.Item>>) {
-            if (response.isSuccessful) {
-                response.body()?.let { _state.value = State.Loaded(it) }
-            }
-        }
-
-        override fun onFailure(call: Call<List<MainActivity.Adapter.Item>>, t: Throwable) {
-            _state.value = State.Loaded(emptyList())
-        }
-    }
-
     init {
         refreshData()
     }
 
     private fun refreshData() {
-        Repository.getPosts(callback)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _state.postValue(State.Loaded(Repository.getPosts()))
+            } catch (ex: Exception){
+                _state.postValue(State.Error)
+            }
+        }
     }
 
     fun processAction(action: Action) {

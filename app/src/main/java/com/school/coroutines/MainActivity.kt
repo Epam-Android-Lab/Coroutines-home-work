@@ -3,6 +3,7 @@ package com.school.coroutines
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
@@ -28,6 +29,10 @@ class MainActivity : AppCompatActivity() {
                     is State.Loaded -> {
                         root.isRefreshing = false
                         adapter.submitList(state.content)
+                    }
+                    State.Error -> {
+                        root.isRefreshing = false
+                        Toast.makeText(this@MainActivity, "Something went wrong", Toast.LENGTH_LONG).show()
                     }
                 }
             }
