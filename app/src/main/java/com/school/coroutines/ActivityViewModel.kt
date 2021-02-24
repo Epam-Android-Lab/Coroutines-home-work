@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,8 +20,8 @@ class ActivityViewModel : ViewModel() {
     }
 
     private fun refreshData() {
-        viewModelScope.launch {
-            _state.value = State.Loaded(Repository.getPosts())
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.postValue(State.Loaded(Repository.getPosts()))
         }
     }
 
